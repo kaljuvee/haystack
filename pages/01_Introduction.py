@@ -2,6 +2,14 @@ import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
+import numpy as np
+from datetime import datetime
+import sys
+import os
+
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo
 
 st.set_page_config(page_title="Introduction", page_icon="📖", layout="wide")
 
@@ -125,6 +133,34 @@ Each section includes:
 st.markdown("---")
 st.markdown("### 🚀 Ready to Start?")
 st.markdown("Navigate to **Chapter 1** in the sidebar to begin your journey into RAG with Haystack!")
+
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive RAG Introduction Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Introduction to RAG with the document
+    st.markdown("### 🎯 RAG Introduction with Your Document")
+    
+    st.markdown(f"""
+    Welcome to RAG! Let's explore how Retrieval-Augmented Generation works with your document: **{doc_name}**
+    
+    **What RAG does with your document:**
+    1. **Breaks it down** into manageable chunks
+    2. **Creates embeddings** (vector representations) of each chunk
+    3. **Stores them** in a searchable database
+    4. **Retrieves relevant chunks** when you ask questions
+    5. **Generates answers** using both your question and the retrieved context
+    """)
+    
+    # RAG demonstration
+    display_rag_demo(text, doc_name)
 
 # Sidebar content
 with st.sidebar:

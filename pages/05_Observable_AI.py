@@ -4,10 +4,16 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 4: Observable AI", page_icon="👁️", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo
 
-st.title("👁️ Chapter 4: Observable AI")
+st.set_page_config(page_title="Observable AI", page_icon="👁️", layout="wide")
+
+st.title("👁️ Observable AI")
 
 st.markdown("""
 ## The Importance of Observability
@@ -471,9 +477,60 @@ with col2:
     - Poor incident response procedures
     """)
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive Observable AI Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Observability analysis for the document
+    st.markdown("### 👁️ Observability Analysis for Your Document")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Document Monitoring Metrics")
+        
+        doc_complexity = len(text.split()) / 100  # Complexity score
+        readability = np.random.uniform(0.6, 0.9)  # Simulated readability
+        
+        st.metric("Document Complexity", f"{doc_complexity:.1f}")
+        st.metric("Readability Score", f"{readability:.2f}")
+        
+        # Simulate monitoring alerts
+        if doc_complexity > 50:
+            st.warning("⚠️ High complexity detected - monitor performance closely")
+        else:
+            st.success("✅ Document complexity within normal range")
+    
+    with col2:
+        st.markdown("#### Drift Detection Simulation")
+        
+        # Simulate concept drift detection
+        baseline_similarity = np.random.uniform(0.8, 0.95)
+        current_similarity = np.random.uniform(0.7, 0.9)
+        drift_score = abs(baseline_similarity - current_similarity)
+        
+        st.metric("Baseline Similarity", f"{baseline_similarity:.3f}")
+        st.metric("Current Similarity", f"{current_similarity:.3f}")
+        st.metric("Drift Score", f"{drift_score:.3f}")
+        
+        if drift_score > 0.1:
+            st.error("🚨 Concept drift detected!")
+        else:
+            st.success("✅ No significant drift detected")
+    
+    # RAG demonstration
+    display_rag_demo(text, doc_name)
+
 # Sidebar
 with st.sidebar:
-    st.markdown("## 👁️ Chapter 4 Summary")
+    st.markdown("## 👁️ Observable AI Summary")
     st.markdown("""
     ### Key Concepts:
     - Data and concept drift

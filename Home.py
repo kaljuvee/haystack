@@ -48,12 +48,12 @@ with st.sidebar:
     st.markdown("## 📚 Book Chapters")
     st.markdown("""
     - **Introduction**: RAG with Haystack
-    - **Chapter 1**: Introduction to RAG
-    - **Chapter 2**: Evaluating and Optimizing RAG
-    - **Chapter 3**: Scalable AI
-    - **Chapter 4**: Observable AI
-    - **Chapter 5**: Governance of AI
-    - **Chapter 6**: Advanced RAG
+    - **RAG Fundamentals**: Introduction to RAG
+    - **Evaluation & Optimization**: Evaluating and Optimizing RAG
+    - **Scalable AI**: Moving to Production
+    - **Observable AI**: Monitoring and Observability
+    - **Governance**: Managing AI Systems
+    - **Advanced RAG**: Cutting-edge Techniques
     """)
     
     st.markdown("---")

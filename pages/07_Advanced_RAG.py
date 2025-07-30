@@ -3,10 +3,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 6: Advanced RAG", page_icon="🚀", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo, calculate_rag_metrics, simulate_retrieval
 
-st.title("🚀 Chapter 6: Advanced RAG and Keeping Pace with AI Developments")
+st.set_page_config(page_title="Advanced RAG", page_icon="🚀", layout="wide")
+
+st.title("🚀 Advanced RAG and Keeping Pace with AI Developments")
 
 st.markdown("""
 ## The Evolution of RAG
@@ -740,9 +746,158 @@ st.markdown("### 🎯 Recommended Technologies:")
 for rec in recommendations:
     st.markdown(rec)
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Advanced RAG Techniques Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Advanced RAG techniques demonstration
+    st.markdown("### 🚀 Advanced RAG Evaluation Metrics")
+    
+    # Advanced evaluation metrics
+    st.markdown("#### 🎯 Advanced Evaluation Suite")
+    
+    advanced_queries = [
+        "Summarize the key concepts and their relationships",
+        "What are the technical implementation details?",
+        "Compare different approaches mentioned in the document",
+        "What are the future trends and recommendations?"
+    ]
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("##### Query Complexity Analysis")
+        selected_query = st.selectbox(
+            "Select a complex query:",
+            advanced_queries,
+            help="Choose a complex query to test advanced RAG capabilities"
+        )
+        
+        chunk_size = st.slider("Chunk Size", 200, 1000, 500, 50)
+        top_k = st.slider("Top-K Retrieval", 1, 10, 5)
+    
+    with col2:
+        st.markdown("##### Retrieval Strategy")
+        retrieval_strategy = st.selectbox(
+            "Retrieval Strategy:",
+            ["Semantic Similarity", "Hybrid (Semantic + Keyword)", "Dense Retrieval"],
+            help="Choose retrieval strategy for evaluation"
+        )
+        
+        rerank = st.checkbox("Enable Re-ranking", value=True)
+        diversity_penalty = st.slider("Diversity Penalty", 0.0, 1.0, 0.3, 0.1)
+    
+    if st.button("🔍 Run Advanced Evaluation"):
+        with st.spinner("Running advanced evaluation..."):
+            # Simulate advanced retrieval
+            retrieved_chunks = simulate_retrieval(selected_query, text, top_k=top_k)
+            
+            if retrieved_chunks:
+                # Calculate advanced metrics
+                metrics = calculate_rag_metrics(selected_query, retrieved_chunks)
+                
+                # Display advanced metrics
+                st.markdown("#### 📊 Advanced Metrics Dashboard")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("##### Retrieval Quality")
+                    st.metric("Precision@K", f"{metrics.get('avg_similarity', 0):.3f}")
+                    st.metric("Coverage", f"{metrics.get('coverage', 0):.1%}")
+                    st.metric("Diversity", f"{metrics.get('diversity', 0):.3f}")
+                
+                with col2:
+                    st.markdown("##### Response Quality")
+                    # Simulated response quality metrics
+                    coherence = np.random.uniform(0.7, 0.95)
+                    relevance = metrics.get('avg_similarity', 0) * 0.9
+                    completeness = min(metrics.get('coverage', 0) * 1.2, 1.0)
+                    
+                    st.metric("Coherence", f"{coherence:.3f}")
+                    st.metric("Relevance", f"{relevance:.3f}")
+                    st.metric("Completeness", f"{completeness:.3f}")
+                
+                with col3:
+                    st.markdown("##### System Performance")
+                    # Simulated performance metrics
+                    latency = np.random.uniform(150, 300)
+                    throughput = np.random.uniform(10, 50)
+                    efficiency = (metrics.get('avg_similarity', 0) / (latency / 1000)) * 100
+                    
+                    st.metric("Latency (ms)", f"{latency:.0f}")
+                    st.metric("Throughput (q/s)", f"{throughput:.1f}")
+                    st.metric("Efficiency Score", f"{efficiency:.1f}")
+                
+                # Advanced visualization
+                st.markdown("#### 📈 Advanced Analytics")
+                
+                # Create comprehensive metrics visualization
+                metrics_data = {
+                    "Metric": ["Precision", "Recall", "F1-Score", "Coverage", "Diversity", "Coherence"],
+                    "Score": [
+                        metrics.get('avg_similarity', 0),
+                        metrics.get('coverage', 0),
+                        2 * (metrics.get('avg_similarity', 0) * metrics.get('coverage', 0)) / 
+                        (metrics.get('avg_similarity', 0) + metrics.get('coverage', 0) + 0.001),
+                        metrics.get('coverage', 0),
+                        metrics.get('diversity', 0),
+                        coherence
+                    ],
+                    "Category": ["Retrieval", "Retrieval", "Retrieval", "Coverage", "Diversity", "Generation"]
+                }
+                
+                metrics_df = pd.DataFrame(metrics_data)
+                
+                fig = px.bar(
+                    metrics_df,
+                    x="Metric",
+                    y="Score",
+                    color="Category",
+                    title="Comprehensive RAG Evaluation Metrics",
+                    color_discrete_map={
+                        "Retrieval": "#1f77b4",
+                        "Coverage": "#ff7f0e", 
+                        "Diversity": "#2ca02c",
+                        "Generation": "#d62728"
+                    }
+                )
+                fig.update_layout(yaxis_range=[0, 1])
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Detailed chunk analysis
+                st.markdown("#### 🔍 Retrieved Chunks Analysis")
+                
+                for i, chunk in enumerate(retrieved_chunks):
+                    with st.expander(f"Chunk {i+1} - Similarity: {chunk['similarity']:.3f}"):
+                        st.write(chunk["chunk"])
+                        
+                        # Chunk-level metrics
+                        chunk_words = len(chunk["chunk"].split())
+                        chunk_sentences = len(chunk["chunk"].split('.'))
+                        
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Words", chunk_words)
+                        with col2:
+                            st.metric("Sentences", chunk_sentences)
+                        with col3:
+                            st.metric("Relevance", f"{chunk['similarity']:.3f}")
+    
+    # Standard RAG demonstration
+    st.markdown("---")
+    display_rag_demo(text, doc_name)
+
 # Sidebar
 with st.sidebar:
-    st.markdown("## 🚀 Chapter 6 Summary")
+    st.markdown("## 🚀 Advanced RAG Summary")
     st.markdown("""
     ### Advanced Techniques:
     - AI Agents

@@ -3,10 +3,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 2: Evaluation & Optimization", page_icon="📊", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo, calculate_rag_metrics, simulate_retrieval
 
-st.title("📊 Chapter 2: Evaluating and Optimizing RAG")
+st.set_page_config(page_title="Evaluation & Optimization", page_icon="📊", layout="wide")
+
+st.title("📊 Evaluating and Optimizing RAG")
 
 st.markdown("""
 ## The Quality Imperative
@@ -403,9 +409,128 @@ with col2:
     - Premature optimization
     """)
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive RAG Evaluation Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Advanced RAG evaluation with concrete metrics
+    st.markdown("### 📊 Concrete RAG Evaluation Metrics")
+    
+    # Test queries for evaluation
+    st.markdown("#### 🧪 Evaluation Test Suite")
+    
+    test_queries = [
+        "What are the main challenges discussed in the document?",
+        "What are the key recommendations or best practices?",
+        "What methodologies or approaches are mentioned?",
+        "What are the benefits and limitations discussed?"
+    ]
+    
+    selected_queries = st.multiselect(
+        "Select test queries for evaluation:",
+        test_queries,
+        default=test_queries[:2],
+        help="Choose queries to evaluate RAG performance"
+    )
+    
+    if selected_queries and st.button("🔍 Run Evaluation Suite"):
+        evaluation_results = []
+        
+        with st.spinner("Running evaluation suite..."):
+            for query in selected_queries:
+                # Simulate retrieval
+                retrieved_chunks = simulate_retrieval(query, text, top_k=3)
+                
+                # Calculate metrics
+                metrics = calculate_rag_metrics(query, retrieved_chunks)
+                
+                evaluation_results.append({
+                    "Query": query,
+                    "Retrieval Success": metrics.get("retrieval_success", 0),
+                    "Avg Similarity": metrics.get("avg_similarity", 0),
+                    "Max Similarity": metrics.get("max_similarity", 0),
+                    "Query Coverage": metrics.get("coverage", 0),
+                    "Result Diversity": metrics.get("diversity", 0),
+                    "Retrieved Chunks": len(retrieved_chunks)
+                })
+        
+        # Display results
+        if evaluation_results:
+            st.markdown("#### 📈 Evaluation Results")
+            
+            results_df = pd.DataFrame(evaluation_results)
+            st.dataframe(results_df, use_container_width=True)
+            
+            # Visualization of metrics
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Similarity scores
+                fig_sim = px.bar(
+                    results_df, 
+                    x="Query", 
+                    y="Avg Similarity",
+                    title="Average Similarity Scores by Query",
+                    color="Avg Similarity",
+                    color_continuous_scale="viridis"
+                )
+                fig_sim.update_xaxis(tickangle=45)
+                st.plotly_chart(fig_sim, use_container_width=True)
+            
+            with col2:
+                # Coverage and diversity
+                metrics_df = results_df[["Query", "Query Coverage", "Result Diversity"]].melt(
+                    id_vars=["Query"], 
+                    var_name="Metric", 
+                    value_name="Score"
+                )
+                
+                fig_metrics = px.bar(
+                    metrics_df,
+                    x="Query",
+                    y="Score",
+                    color="Metric",
+                    barmode="group",
+                    title="Coverage and Diversity Metrics"
+                )
+                fig_metrics.update_xaxis(tickangle=45)
+                st.plotly_chart(fig_metrics, use_container_width=True)
+            
+            # Summary statistics
+            st.markdown("#### 📋 Evaluation Summary")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                avg_similarity = results_df["Avg Similarity"].mean()
+                st.metric("Overall Avg Similarity", f"{avg_similarity:.3f}")
+            
+            with col2:
+                avg_coverage = results_df["Query Coverage"].mean()
+                st.metric("Overall Coverage", f"{avg_coverage:.1%}")
+            
+            with col3:
+                avg_diversity = results_df["Result Diversity"].mean()
+                st.metric("Overall Diversity", f"{avg_diversity:.3f}")
+            
+            with col4:
+                success_rate = results_df["Retrieval Success"].mean()
+                st.metric("Success Rate", f"{success_rate:.1%}")
+    
+    # RAG demonstration
+    st.markdown("---")
+    display_rag_demo(text, doc_name)
+
 # Sidebar
 with st.sidebar:
-    st.markdown("## 📊 Chapter 2 Summary")
+    st.markdown("## 📊 Evaluation & Optimization Summary")
     st.markdown("""
     ### Key Concepts:
     - RAG evaluation methods

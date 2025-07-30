@@ -3,10 +3,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 1: RAG Fundamentals", page_icon="🧠", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo
 
-st.title("🧠 Chapter 1: Introduction to RAG with Haystack")
+st.set_page_config(page_title="RAG Fundamentals", page_icon="🧠", layout="wide")
+
+st.title("🧠 RAG Fundamentals")
 
 st.markdown("""
 ## The Shift to Compound AI Systems
@@ -260,7 +266,7 @@ including metrics, testing strategies, and pipeline optimizations.
 
 # Sidebar
 with st.sidebar:
-    st.markdown("## 📖 Chapter 1 Summary")
+    st.markdown("## 📖 RAG Fundamentals Summary")
     st.markdown("""
     ### Key Concepts:
     - LLM fundamentals
@@ -276,5 +282,48 @@ with st.sidebar:
     """)
     
     st.markdown("### 💡 Key Takeaway")
-    st.success("RAG bridges the gap between general LLMs and domain-specific applications by dynamically incorporating relevant context.")
+    st.success("""
+RAG bridges the gap between general LLMs and domain-specific applications by 
+dynamically incorporating relevant context.
+""")
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive RAG Fundamentals Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # RAG demonstration
+    display_rag_demo(text, doc_name)
+    
+    # RAG Architecture demonstration with the document
+    st.markdown("### 🏗️ RAG Architecture Applied to Your Document")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Document Processing Pipeline")
+        st.markdown(f"""
+        1. **Document Ingestion**: {doc_name} loaded
+        2. **Text Extraction**: {len(text.split())} words extracted
+        3. **Chunking**: Document split into manageable pieces
+        4. **Embedding**: Text converted to vector representations
+        5. **Storage**: Vectors stored in retrieval system
+        """)
+    
+    with col2:
+        st.markdown("#### Query Processing Pipeline")
+        st.markdown("""
+        1. **Query Input**: User asks a question
+        2. **Query Embedding**: Question converted to vector
+        3. **Similarity Search**: Find relevant document chunks
+        4. **Context Assembly**: Combine query + retrieved chunks
+        5. **Response Generation**: LLM generates contextual answer
+        """)
+
+# Sidebar

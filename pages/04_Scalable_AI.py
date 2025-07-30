@@ -3,10 +3,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 3: Scalable AI", page_icon="🚀", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo
 
-st.title("🚀 Chapter 3: Scalable AI")
+st.set_page_config(page_title="Scalable AI", page_icon="🚀", layout="wide")
+
+st.title("🚀 Scalable AI")
 
 st.markdown("""
 ## From Prototype to Production
@@ -511,9 +517,79 @@ with col2:
     - Poor monitoring and alerting
     """)
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive Scalable AI Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Scalability analysis for the document
+    st.markdown("### 📈 Scalability Analysis for Your Document")
+    
+    doc_size = len(text.split())
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Document Scalability Metrics")
+        st.metric("Document Size (words)", f"{doc_size:,}")
+        
+        # Estimate processing requirements
+        processing_time = doc_size * 0.001  # Simulated processing time
+        memory_req = doc_size * 0.01  # Simulated memory requirement
+        
+        st.metric("Est. Processing Time (s)", f"{processing_time:.2f}")
+        st.metric("Est. Memory Req (MB)", f"{memory_req:.1f}")
+        
+        # Scalability recommendations
+        if doc_size < 1000:
+            scale_rec = "✅ Single instance deployment suitable"
+        elif doc_size < 10000:
+            scale_rec = "⚠️ Consider load balancing for high traffic"
+        else:
+            scale_rec = "🚨 Distributed processing recommended"
+        
+        st.info(scale_rec)
+    
+    with col2:
+        st.markdown("#### Deployment Strategy Recommendation")
+        
+        # Simulate deployment recommendations based on document characteristics
+        if doc_size < 5000:
+            deployment = "Monolithic"
+            reason = "Small document size allows for simple deployment"
+        elif doc_size < 15000:
+            deployment = "Microservices"
+            reason = "Medium size benefits from modular architecture"
+        else:
+            deployment = "Serverless/Hybrid"
+            reason = "Large document requires distributed processing"
+        
+        st.success(f"**Recommended**: {deployment}")
+        st.write(f"**Reason**: {reason}")
+        
+        # Performance projections
+        st.markdown("##### Performance Projections")
+        concurrent_users = st.slider("Concurrent Users", 1, 1000, 100)
+        
+        # Simulate performance metrics
+        latency = max(50, processing_time * 1000 + (concurrent_users * 0.5))
+        throughput = min(1000, 10000 / latency)
+        
+        st.metric("Expected Latency (ms)", f"{latency:.0f}")
+        st.metric("Expected Throughput (req/s)", f"{throughput:.1f}")
+    
+    # RAG demonstration
+    display_rag_demo(text, doc_name)
+
 # Sidebar
 with st.sidebar:
-    st.markdown("## 🚀 Chapter 3 Summary")
+    st.markdown("## 🚀 Scalable AI Summary")
     st.markdown("""
     ### Key Concepts:
     - Production readiness

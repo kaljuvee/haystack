@@ -3,10 +3,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import sys
+import os
 
-st.set_page_config(page_title="Chapter 5: Governance of AI", page_icon="⚖️", layout="wide")
+# Add parent directory to path to import document_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from document_utils import display_document_upload_section, display_document_analysis, display_rag_demo
 
-st.title("⚖️ Chapter 5: Governance of AI")
+st.set_page_config(page_title="Governance", page_icon="⚖️", layout="wide")
+
+st.title("⚖️ Governance of AI")
 
 st.markdown("""
 ## The Governance Imperative
@@ -594,9 +600,62 @@ with col2:
     - Inadequate training and awareness
     """)
 
+# Interactive Document Processing Section
+st.markdown("---")
+st.markdown("## 🔬 Interactive AI Governance Demo")
+
+# Document upload and processing
+text, doc_name = display_document_upload_section()
+
+if text and doc_name:
+    # Display document analysis
+    display_document_analysis(text, doc_name)
+    
+    # Governance analysis for the document
+    st.markdown("### ⚖️ Governance Analysis for Your Document")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Privacy & Compliance Assessment")
+        
+        # Simulate privacy risk assessment
+        doc_size = len(text.split())
+        privacy_risk = "Low" if doc_size < 5000 else "Medium" if doc_size < 15000 else "High"
+        
+        st.metric("Document Size", f"{doc_size:,} words")
+        st.metric("Privacy Risk Level", privacy_risk)
+        
+        # Compliance recommendations
+        if "personal" in text.lower() or "data" in text.lower():
+            st.warning("⚠️ Potential PII detected - review GDPR compliance")
+        else:
+            st.success("✅ No obvious PII detected")
+    
+    with col2:
+        st.markdown("#### Cost & Resource Analysis")
+        
+        # Simulate cost analysis
+        processing_cost = doc_size * 0.0001  # Simulated cost per word
+        storage_cost = doc_size * 0.00001   # Simulated storage cost
+        total_cost = processing_cost + storage_cost
+        
+        st.metric("Processing Cost ($)", f"{processing_cost:.4f}")
+        st.metric("Storage Cost ($)", f"{storage_cost:.4f}")
+        st.metric("Total Cost ($)", f"{total_cost:.4f}")
+        
+        # Cost optimization recommendations
+        if total_cost > 0.1:
+            st.info("💡 Consider document chunking for cost optimization")
+        else:
+            st.success("✅ Cost within acceptable range")
+    
+    # RAG demonstration
+    display_rag_demo(text, doc_name)
+
 # Sidebar
 with st.sidebar:
-    st.markdown("## ⚖️ Chapter 5 Summary")
+    st.markdown("## ⚖️ Governance Summary")
     st.markdown("""
     ### Governance Pillars:
     - Cost Management
